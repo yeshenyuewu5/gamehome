@@ -142,7 +142,24 @@
       .game-img { height: 110px; }
       .cta-banner { padding: 36px 20px; margin: 16px; }
     }
-  </style>
+  
+    /* Modal */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999; display:none; justify-content:center; align-items:center; padding:24px; backdrop-filter:blur(8px); }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--card); border:1px solid var(--border); border-radius:var(--r); max-width:720px; width:100%; max-height:85vh; overflow-y:auto; padding:36px; position:relative; animation:fadeUp 0.3s ease; }
+    .modal-close { position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.06); color:var(--sub); font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; border:none; }
+    .modal-close:hover { background:rgba(255,255,255,0.12); color:var(--text); }
+    .modal-body { color:var(--sub); line-height:1.8; font-size:15px; }
+    .modal-body h2 { color:var(--text); font-size:22px; font-weight:800; margin-bottom:16px; }
+    .modal-body h3 { color:var(--text); font-size:17px; font-weight:700; margin:20px 0 10px; }
+    .modal-body p { margin-bottom:12px; }
+    .modal-body ul { padding-left:20px; margin-bottom:12px; }
+    .modal-body li { margin-bottom:6px; }
+    .modal-body strong { color:var(--cyan); }
+    .modal-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .modal-header-img { width:48px; height:48px; border-radius:10px; object-fit:cover; }
+    .modal-header-info h3 { font-size:18px; font-weight:700; color:var(--text); margin:0 0 4px; }
+    .modal-header-info span { font-size:13px; color:var(--muted); }</style>
 </head>
 <body>
 
@@ -280,6 +297,13 @@
     </div>
   </section>
 
+  <!-- Guide Modal -->
+  <div class="modal-overlay" id="guideModal" onclick="if(event.target===this)closeGuideModal()">
+    <div class="modal">
+      <button class="modal-close" onclick="closeGuideModal()">&times;</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
   <!-- Footer -->
   <footer class="footer">
     <p>© 2026 ToolHubb — <span data-i18n="footer">Free game guides for players worldwide.</span></p>
@@ -347,32 +371,32 @@ const FALLBACK_GAMES = [
 ];
 
 const FALLBACK_GUIDES = [
-  { id:'g1', game:'Rust', gameZh:'Rust', title:'Rust Best Base Layouts 2026 — Anti-Grief Edition', titleZh:'Rust 2026最佳建家布局 — 防抄家版', thumb:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=120&q=80', read:'12', date:'2h ago' },
-  { id:'g2', game:'Rust', gameZh:'Rust', title:'Rust Beginner Guide 2026: Survive Your First Week', titleZh:'Rust新手攻略：度过第一周', thumb:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=120&q=80', read:'15', date:'1d ago' },
-  { id:'g3', game:'Rust', gameZh:'Rust', title:'Rust Monument Guide: Best Loot Routes & PVP Spots', titleZh:'Rust地图点攻略：最佳物资路线与PVP点位', thumb:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=120&q=80', read:'10', date:'3d ago' },
-  { id:'g4', game:'Palworld', gameZh:'幻兽帕鲁', title:'Palworld Breeding Guide: Best Pals Combos for Speed & Attack', titleZh:'帕鲁配种攻略：速度/攻击最佳组合', thumb:'https://images.unsplash.com/photo-1614786269829-d24616faf56d?w=120&q=80', read:'8', date:'5h ago' },
-  { id:'g5', game:'Palworld', gameZh:'幻兽帕鲁', title:'Palworld Base Layout: Optimal Auto-Farming Setup', titleZh:'帕鲁基地布局：自动化农场最佳设计', thumb:'https://images.unsplash.com/photo-1614786269829-d24616faf56d?w=120&q=80', read:'6', date:'1d ago' },
-  { id:'g6', game:'Palworld', gameZh:'幻兽帕鲁', title:'Palworld Boss Guide: Tower Bosses & Powerful Raiders', titleZh:'帕鲁BOSS攻略：塔主与强力袭击者', thumb:'https://images.unsplash.com/photo-1614786269829-d24616faf56d?w=120&q=80', read:'10', date:'2d ago' },
-  { id:'g7', game:'Valorant', gameZh:'无畏契约', title:'Valorant Crosshair Settings: Pro Player Configs for 2026', titleZh:'瓦罗兰准星设置：2026职业选手配置', thumb:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=120&q=80', read:'5', date:'1d ago' },
-  { id:'g8', game:'Valorant', gameZh:'无畏契约', title:'Valorant Agent Tier List: Best Picks for Ranked', titleZh:'无畏契约角色强度榜：排位最佳选择', thumb:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=120&q=80', read:'8', date:'3d ago' },
-  { id:'g9', game:'Valorant', gameZh:'无畏契约', title:'Valorant Map Guide: All Callouts & Lineups', titleZh:'无畏契约全地图：报点与投掷物点位', thumb:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=120&q=80', read:'14', date:'5d ago' },
-  { id:'g10', game:'CS2', gameZh:'CS2', title:'CS2 Smoke Lineups: 12 Pro Spots for Every Map', titleZh:'CS2烟点火线：全地图12个职业投点', thumb:'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=120&q=80', read:'15', date:'2d ago' },
-  { id:'g11', game:'CS2', gameZh:'CS2', title:'CS2 Movement Guide: Tips & Training for Better Peeking', titleZh:'CS2身法指南：更好的peek技巧与训练方法', thumb:'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=120&q=80', read:'7', date:'4d ago' },
-  { id:'g12', game:'CS2', gameZh:'CS2', title:'CS2 Weapon Stats: Recoil Patterns & Spray Control', titleZh:'CS2枪械数据：弹道控制与压枪', thumb:'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=120&q=80', read:'10', date:'6d ago' },
-  { id:'g13', game:'Free Fire', gameZh:'Free Fire', title:"Free Fire Sensitivity Settings: Headshot Masters' Configs", titleZh:'Free Fire灵敏度设置：头牌大师配置', thumb:'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=120&q=80', read:'4', date:'3d ago' },
-  { id:'g14', game:'Free Fire', gameZh:'Free Fire', title:'Free Fire Best Characters 2026: Skills & Team Combos', titleZh:'Free Fire最佳角色2026：技能与队伍组合', thumb:'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=120&q=80', read:'6', date:'5d ago' },
-  { id:'g15', game:'Free Fire', gameZh:'Free Fire', title:'Free Fire Drop Guide: Best Landing Spots for High Kills', titleZh:'Free Fire跳伞指南：最佳击杀落点', thumb:'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=120&q=80', read:'5', date:'1w ago' },
-  { id:'g16', game:'Satisfactory', gameZh:'幸福工厂', title:'Satisfactory Beginner Guide 2026: From Biomass to Coal', titleZh:'幸福工厂新手攻略：从生物质到煤炭', thumb:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', read:'12', date:'2d ago' },
-  { id:'g17', game:'Satisfactory', gameZh:'幸福工厂', title:'Satisfactory Best Factory Layouts: Modular Designs', titleZh:'幸福工厂最佳流水线布局：模块化设计', thumb:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', read:'16', date:'4d ago' },
-  { id:'g18', game:'Minecraft', gameZh:'我的世界', title:'Minecraft Survival Base: Complete Starter Build Guide', titleZh:'我的世界生存基地：完整新手建造指南', thumb:'https://images.unsplash.com/photo-1614263637408-70797d85e408?w=600&q=80', read:'10', date:'1d ago' },
-  { id:'g19', game:'Minecraft', gameZh:'我的世界', title:'Minecraft Redstone Guide: Automated Farms & Machines', titleZh:'我的世界红石指南：自动化农场与机器', thumb:'https://images.unsplash.com/photo-1614263637408-70797d85e408?w=600&q=80', read:'20', date:'3d ago' },
-  { id:'g20', game:'Minecraft', gameZh:'我的世界', title:'Minecraft Enchanting Guide: Best Enchantments for Every Tool', titleZh:'我的世界附魔指南：各工具最佳附魔', thumb:'https://images.unsplash.com/photo-1614263637408-70797d85e408?w=600&q=80', read:'8', date:'5d ago' },
-  { id:'g21', game:'Fortnite', gameZh:'堡垒之夜', title:'Fortnite Build Mode Guide: Advanced Building Techniques', titleZh:'堡垒之夜搭板指南：高级搭板技巧', thumb:'https://images.unsplash.com/photo-1552820728-8b83bb6b10f7?w=600&q=80', read:'12', date:'2d ago' },
-  { id:'g22', game:'Fortnite', gameZh:'堡垒之夜', title:'Fortnite Weapon Tier List: Best Guns for Chapter 6', titleZh:'堡垒之夜武器强度榜：第6章最佳武器', thumb:'https://images.unsplash.com/photo-1552820728-8b83bb6b10f7?w=600&q=80', read:'6', date:'4d ago' },
-  { id:'g23', game:'Apex Legends', gameZh:'Apex英雄', title:'Apex Legends Season Guide: Best Legends & Meta Weapons', titleZh:'Apex英雄赛季指南：最佳传奇与主流武器', thumb:'https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=600&q=80', read:'9', date:'1d ago' },
-  { id:'g24', game:'Apex Legends', gameZh:'Apex英雄', title:'Apex Movement Guide: Advanced Techniques to Level Up', titleZh:'Apex身法进阶：高级技巧让你变强', thumb:'https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=600&q=80', read:'11', date:'3d ago' },
-  { id:'g25', game:'GTA V', gameZh:'GTA 5', title:'GTA V Cayo Perico Heist: Solo Guide & Best Approach', titleZh:'GTA5佩里科岛抢劫：单人攻略与最佳路线', thumb:'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=600&q=80', read:'18', date:'1d ago' },
-  { id:'g26', game:'GTA V', gameZh:'GTA 5', title:'GTA Online Money Guide 2026: Best Ways to Make $', titleZh:'GTA线上赚钱攻略2026：最快赚钱方法', thumb:'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=600&q=80', read:'14', date:'5d ago' }
+  { id:'g1', game:'Rust', gameZh:'Rust', title:'Rust Best Base Layouts 2026 — Anti-Grief Edition', titleZh:'Rust 2026最佳建家布局 — 防抄家版', thumb:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=120&q=80', read:'12', date:'2h ago', gameId:'rust', body:'<h2>Top Rust Base Layouts for 2026</h2><p>Building a raid-proof base in Rust is essential for survival. Here are the best layouts that will keep your loot safe in 2026.</p><h3>1. The HQM Bunker Base</h3><p>This design uses High Quality Metal walls and doors in a compact 2x2 footprint. Perfect for solo/duo players. Key features:</p><ul><li>Two armored doors before reaching the TC</li><li>Hidden loot room behind a garage door</li><li>Peek-out windows for counters</li></ul><h3>2. The Multi-TC Compound</h3><p>Place multiple Tool Cupboards across a compound to prevent raiders from building up.</p><h3>3. The Pixel-Gap Loot Room</h3><p>Hide your most valuable items behind a pixel gap — raiders often overlook these tiny openings.</p><p><strong>Pro tip:</strong> Always place your TC behind at least two garage doors.</p>', bodyZh:'<h2>2026年最佳Rust建家布局</h2><p>建造防抄家基地是Rust生存的关键。</p><h3>1. HQM碉堡基地</h3><p>利用高质金属墙和门打造紧凑的2x2布局。要点：</p><ul><li>抵达TC前至少两道装甲门</li><li>车库门后隐藏储物室</li><li>架枪窗用于反击</li></ul><h3>2. 多TC复合基地</h3><p>放置多个TC防止搭板靠近。</p><h3>3. 像素缝隙储物间</h3><p>利用像素缝隙隐藏最值钱的物品。</p><p><strong>提示：</strong>TC后至少两道车库门。</p>' },
+  { id:'g2', game:'Rust', gameZh:'Rust', title:'Rust Beginner Guide 2026: Survive Your First Week', titleZh:'Rust新手攻略：度过第一周', thumb:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=120&q=80', read:'15', date:'1d ago', gameId:'rust', body:'<h2>Rust Beginner Guide 2026</h2><p>New to Rust? Here is how to survive your first week.</p><h3>Day 1: Get Established</h3><p>Spawn on the beach, hit trees and rocks, craft a stone hatchet and pickaxe. Build a small 1x2 starter base near a river.</p><h3>Day 2-3: Gear Up</h3><p>Run monuments for scrap. Get a tier 2 workbench and craft a Python or Thompson.</p><h3>Day 4-7: Expand</h3><p>Upgrade to a 2x2 with airlock. Start farming sulfur for raiding.</p>', bodyZh:'<h2>Rust新手攻略2026</h2><p>初入Rust？以下是如何度过第一周。</p><h3>第一天：安家</h3><p>海滩出生，砍树采石，在河边建1x2小基地。</p><h3>第2-3天：装备</h3><p>跑遗迹收废料，凑二级工作台。</p><h3>第4-7天：扩张</h3><p>升级基地，开始采集硫磺。</p>' },
+  { id:'g3', game:'Rust', gameZh:'Rust', title:'Rust Monument Guide: Best Loot Routes & PVP Spots', titleZh:'Rust地图点攻略：最佳物资路线与PVP点位', thumb:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=120&q=80', read:'10', date:'3d ago', gameId:'rust', body:'<h2>Rust Monument Guide</h2><p>Each monument offers different loot and risks.</p><h3>Launch Site (Best Loot)</h3><p>Highest tier loot but heavy PVP. Bring a hazmat suit and teammates.</p><h3>Military Tunnel</h3><p>Good source of guns. Crouch-walk past turrets.</p><h3>Train Yard</h3><p>Decent for solos. Quick in-and-out.</p>', bodyZh:'<h2>Rust地图点攻略</h2><h3>发射场（最佳物资）</h3><p>最高级loot但PVP激烈。</p><h3>军事隧道</h3><p>枪械的好来源。</p><h3>火车站</h3><p>适合单人玩家。</p>' },
+  { id:'g4', game:'Palworld', gameZh:'幻兽帕鲁', title:'Palworld Breeding Guide: Best Pals Combos for Speed & Attack', titleZh:'帕鲁配种攻略：速度/攻击最佳组合', thumb:'https://images.unsplash.com/photo-1614786269829-d24616faf56d?w=120&q=80', read:'8', date:'5h ago', gameId:'palworld', body:'<h2>Palworld Breeding Guide</h2><p>Learn the best breeding combos for ultimate Pals.</p><h3>Best Combat Combos</h3><p>Anubis + Astegon = Jormuntide Ignis (best fire attacker)</p><h3>Best Work Combos</h3><p>Lyleen + Petallia = Warsect (top-tier base worker)</p><h3>Tips</h3><p>Build a breeding farm early. Cakes are the only food for breeding.</p>', bodyZh:'<h2>帕鲁配种攻略</h2><h3>最佳战斗帕鲁</h3><p>阿努比斯+腾炎龙=炎魔羊</p><h3>最佳工作帕鲁</h3><p>百合女王+花丽娜=战争之象</p>' },
+  { id:'g5', game:'Palworld', gameZh:'幻兽帕鲁', title:'Palworld Base Layout: Optimal Auto-Farming Setup', titleZh:'帕鲁基地布局：自动化农场最佳设计', thumb:'https://images.unsplash.com/photo-1614786269829-d24616faf56d?w=120&q=80', read:'6', date:'1d ago', gameId:'palworld', body:'<h2>Palworld Base Layout</h2><p>Design the perfect automated base.</p><h3>Central Hub Layout</h3><p>Pal Box in center, workstations in a circle.</p><h3>Production Area</h3><p>Kitchen, Refinery, Assembly Line in one cluster.</p><h3>Farming Zone</h3><p>Berry plantation + Wheat + Ranch. Auto-harvesting setup.</p>', bodyZh:'<h2>帕鲁基地布局：自动化农场</h2><h3>中心枢纽布局</h3><p>帕鲁终端放中心，工作台围绕。</p><h3>生产区</h3><p>厨房、精炼厂、流水线放一起。</p>' },
+  { id:'g6', game:'Palworld', gameZh:'幻兽帕鲁', title:'Palworld Boss Guide: Tower Bosses & Powerful Raiders', titleZh:'帕鲁BOSS攻略：塔主与强力袭击者', thumb:'https://images.unsplash.com/photo-1614786269829-d24616faf56d?w=120&q=80', read:'10', date:'2d ago', gameId:'palworld', body:'<h2>Palworld Boss Guide</h2><p>Defeat every tower boss.</p><h3>Zoe &amp; Grizzbolt</h3><p>Weak to ground types. Level 15+ Dumuds.</p><h3>Lily &amp; Lyleen</h3><p>Weak to fire. Use Pyrin or Vanwyrm.</p><h3>Paladius &amp; Necromus</h3><p>Ultimate duo boss. Level 45+ recommended.</p>', bodyZh:'<h2>帕鲁BOSS攻略</h2><h3>佐伊&amp;暴电熊</h3><p>弱地系。15级以上遁地鼠。</p><h3>莉莉&amp;百合女王</h3><p>弱火系。</p>' },
+  { id:'g7', game:'Valorant', gameZh:'无畏契约', title:'Valorant Crosshair Settings: Pro Player Configs for 2026', titleZh:'瓦罗兰准星设置：2026职业选手配置', thumb:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=120&q=80', read:'5', date:'1d ago', gameId:'valorant', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g8', game:'Valorant', gameZh:'无畏契约', title:'Valorant Agent Tier List: Best Picks for Ranked', titleZh:'无畏契约角色强度榜：排位最佳选择', thumb:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=120&q=80', read:'8', date:'3d ago', gameId:'valorant', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g9', game:'Valorant', gameZh:'无畏契约', title:'Valorant Map Guide: All Callouts & Lineups', titleZh:'无畏契约全地图：报点与投掷物点位', thumb:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=120&q=80', read:'14', date:'5d ago', gameId:'valorant', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g10', game:'CS2', gameZh:'CS2', title:'CS2 Smoke Lineups: 12 Pro Spots for Every Map', titleZh:'CS2烟点火线：全地图12个职业投点', thumb:'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=120&q=80', read:'15', date:'2d ago', gameId:'cs2', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g11', game:'CS2', gameZh:'CS2', title:'CS2 Movement Guide: Tips & Training for Better Peeking', titleZh:'CS2身法指南：更好的peek技巧与训练方法', thumb:'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=120&q=80', read:'7', date:'4d ago', gameId:'cs2', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g12', game:'CS2', gameZh:'CS2', title:'CS2 Weapon Stats: Recoil Patterns & Spray Control', titleZh:'CS2枪械数据：弹道控制与压枪', thumb:'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=120&q=80', read:'10', date:'6d ago', gameId:'cs2', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g13', game:'Free Fire', gameZh:'Free Fire', title:'Free Fire Sensitivity Settings: Headshot Masters\' Configs', titleZh:'Free Fire灵敏度设置：头牌大师配置', thumb:'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=120&q=80', read:'4', date:'3d ago', gameId:'freefire', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g14', game:'Free Fire', gameZh:'Free Fire', title:'Free Fire Best Characters 2026: Skills & Team Combos', titleZh:'Free Fire最佳角色2026：技能与队伍组合', thumb:'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=120&q=80', read:'6', date:'5d ago', gameId:'freefire', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g15', game:'Free Fire', gameZh:'Free Fire', title:'Free Fire Drop Guide: Best Landing Spots for High Kills', titleZh:'Free Fire跳伞指南：最佳击杀落点', thumb:'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=120&q=80', read:'5', date:'1w ago', gameId:'freefire', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g16', game:'Satisfactory', gameZh:'幸福工厂', title:'Satisfactory Beginner Guide 2026: From Biomass to Coal', titleZh:'幸福工厂新手攻略：从生物质到煤炭', thumb:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', read:'12', date:'2d ago', gameId:'satisfactory', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g17', game:'Satisfactory', gameZh:'幸福工厂', title:'Satisfactory Best Factory Layouts: Modular Designs', titleZh:'幸福工厂最佳流水线布局：模块化设计', thumb:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', read:'16', date:'4d ago', gameId:'satisfactory', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g18', game:'Minecraft', gameZh:'我的世界', title:'Minecraft Survival Base: Complete Starter Build Guide', titleZh:'我的世界生存基地：完整新手建造指南', thumb:'https://images.unsplash.com/photo-1614263637408-70797d85e408?w=600&q=80', read:'10', date:'1d ago', gameId:'minecraft', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g19', game:'Minecraft', gameZh:'我的世界', title:'Minecraft Redstone Guide: Automated Farms & Machines', titleZh:'我的世界红石指南：自动化农场与机器', thumb:'https://images.unsplash.com/photo-1614263637408-70797d85e408?w=600&q=80', read:'20', date:'3d ago', gameId:'minecraft', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g20', game:'Minecraft', gameZh:'我的世界', title:'Minecraft Enchanting Guide: Best Enchantments for Every Tool', titleZh:'我的世界附魔指南：各工具最佳附魔', thumb:'https://images.unsplash.com/photo-1614263637408-70797d85e408?w=600&q=80', read:'8', date:'5d ago', gameId:'minecraft', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g21', game:'Fortnite', gameZh:'堡垒之夜', title:'Fortnite Build Mode Guide: Advanced Building Techniques', titleZh:'堡垒之夜搭板指南：高级搭板技巧', thumb:'https://images.unsplash.com/photo-1552820728-8b83bb6b10f7?w=600&q=80', read:'12', date:'2d ago', gameId:'fortnite', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g22', game:'Fortnite', gameZh:'堡垒之夜', title:'Fortnite Weapon Tier List: Best Guns for Chapter 6', titleZh:'堡垒之夜武器强度榜：第6章最佳武器', thumb:'https://images.unsplash.com/photo-1552820728-8b83bb6b10f7?w=600&q=80', read:'6', date:'4d ago', gameId:'fortnite', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g23', game:'Apex Legends', gameZh:'Apex英雄', title:'Apex Legends Season Guide: Best Legends & Meta Weapons', titleZh:'Apex英雄赛季指南：最佳传奇与主流武器', thumb:'https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=600&q=80', read:'9', date:'1d ago', gameId:'apex', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g24', game:'Apex Legends', gameZh:'Apex英雄', title:'Apex Movement Guide: Advanced Techniques to Level Up', titleZh:'Apex身法进阶：高级技巧让你变强', thumb:'https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=600&q=80', read:'11', date:'3d ago', gameId:'apex', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g25', game:'GTA V', gameZh:'GTA 5', title:'GTA V Cayo Perico Heist: Solo Guide & Best Approach', titleZh:'GTA5佩里科岛抢劫：单人攻略与最佳路线', thumb:'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=600&q=80', read:'18', date:'1d ago', gameId:'gta5', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
+  { id:'g26', game:'GTA V', gameZh:'GTA 5', title:'GTA Online Money Guide 2026: Best Ways to Make $', titleZh:'GTA线上赚钱攻略2026：最快赚钱方法', thumb:'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=600&q=80', read:'14', date:'5d ago', gameId:'gta5', body:'<h2>Coming Soon</h2><p>This guide is being written by our team. Check back soon.</p>', bodyZh:'<h2>即将发布</h2><p>该攻略正在编写中，敬请期待。</p>' },
 ];
 
 let games = FALLBACK_GAMES;
@@ -388,6 +412,71 @@ function mapGuide(g) {
 }
 
 /* ===== SUPABASE (direct fetch — no CDN dependency) ===== */
+
+
+/* ===== GUIDE MODAL ===== */
+var _gameFilter = '';
+
+function openGuideModal(id) {
+  var g = guides.find(function(x) { return x.id === id; });
+  if (!g) return;
+  var z = LANG === 'zh';
+  var body = z ? (g.bodyZh || g.body) : (g.body || g.bodyZh);
+  var title = z ? g.titleZh : g.title;
+  var gameName = z ? g.gameZh : g.game;
+  document.getElementById('modalContent').innerHTML = ''
+    + '<div class="modal-header">'
+    + '<img class="modal-header-img" src="' + g.thumb + '" alt="' + title + '" onerror="this.style.display='none'">'
+    + '<div class="modal-header-info">'
+    + '<h3>' + title + '</h3>'
+    + '<span>▶ ' + gameName + ' &middot; ' + (g.read || 5) + ' min read</span>'
+    + '</div></div>'
+    + '<div class="modal-body">' + body + '</div>';
+  document.getElementById('guideModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuideModal() {
+  document.getElementById('guideModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function filterByGame(gameId) {
+  var g = games.find(function(x) { return x.id === gameId; });
+  if (!g) return;
+  _gameFilter = gameId;
+  showAllGuides = true;
+  document.getElementById('searchInput').value = '';
+  renderGuides();
+  document.getElementById('guides').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Override renderGuides to support game filtering
+var _origRenderGuides = renderGuides;
+renderGuides = function() {
+  var list = document.getElementById('guidesList');
+  var q = document.getElementById('searchInput').value.toLowerCase();
+  var z = LANG === 'zh';
+  var source = [];
+  
+  if (_gameFilter && !q) {
+    source = guides.filter(function(g) { return g.gameId === _gameFilter || g.game === _gameFilter; });
+  } else if (q) {
+    source = guides.filter(function(g) {
+      return (z ? g.titleZh : g.title).toLowerCase().indexOf(q) >= 0
+        || (z ? g.gameZh : g.game).toLowerCase().indexOf(q) >= 0;
+    });
+  } else {
+    source = guides;
+  }
+  
+  var display = showAllGuides ? source : source.slice(0, 8);
+  if (display.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:14px;">No guides found.</div>';
+  } else {
+    list.innerHTML = display.map(function(g, i) {
+      var idx = Math.min(i + 1, 6);
+      return ''
 async function initSupabase() {
   if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
     document.getElementById('liveDot').style.background = '#f59e0b';
@@ -441,7 +530,7 @@ function renderGames() {
   const filtered = games.filter(g => (z ? g.nameZh : g.name).toLowerCase().includes(q) || (z ? g.descZh : g.desc).toLowerCase().includes(q));
   const display = showAllGames ? filtered : filtered.slice(0, 6);
   grid.innerHTML = display.map((g, i) => `
-    <a href="/guides/${g.id}/" class="game-card a d${Math.min(i+1,6)}">
+    <a href="javascript:void(0)" onclick="filterByGame('${g.id}')" class="game-card a d${Math.min(i+1,6)}">
       <div class="game-img-wrap">
         <img class="game-img" src="${g.img}" alt="${z ? g.nameZh : g.name}" loading="lazy" onerror="this.style.display='none'">
         ${g.badge ? `<span class="game-badge badge-${g.badge}">${g.badge==='hot'?'🔥 HOT':'✨ NEW'}</span>` : ''}
@@ -455,7 +544,7 @@ function renderGames() {
           <span class="game-arrow">→</span>
         </div>
       </div>
-    </a>
+    </div>
   `).join('');
 }
 
@@ -466,7 +555,7 @@ function renderGuides() {
   const filtered = guides.filter(g => (z ? g.titleZh : g.title).toLowerCase().includes(q) || (z ? g.gameZh : g.game).toLowerCase().includes(q));
   const display = showAllGuides ? filtered : filtered.slice(0, 8);
   list.innerHTML = display.map((g, i) => `
-    <a href="/guide/${g.id}/" class="guide-row a d${Math.min(i+1,6)}">
+    <div class="guide-row a d${Math.min(i+1,6)}" onclick="openGuideModal('${g.id}')" style="cursor:pointer;">
       <img class="guide-thumb" src="${g.thumb}" alt="${z ? g.titleZh : g.title}" loading="lazy" onerror="this.style.display='none'">
       <div class="guide-info">
         <div class="guide-title">${z ? g.titleZh : g.title}</div>
@@ -477,11 +566,11 @@ function renderGuides() {
         </div>
       </div>
       <div class="guide-arrow">→</div>
-    </a>
+    </div>
   `).join('');
 }
 
-document.getElementById('searchInput').addEventListener('input', () => { renderGames(); renderGuides(); });
+document.getElementById('searchInput').addEventListener('input', () => { _gameFilter = ''; renderGames(); renderGuides(); });
 function submitRequest(e) {
   e.preventDefault();
   document.getElementById('reqFeedback').style.display = 'block';
@@ -491,6 +580,9 @@ function submitRequest(e) {
 }
 
 initSupabase();
+// ESC to close modal
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeGuideModal(); });
+
 </script>
 </body>
 </html>
