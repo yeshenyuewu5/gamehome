@@ -448,6 +448,7 @@ let guidePage = 0;
 const GUIDES_PAGE_SIZE = 20;
 let hasMoreGuides = false;
 let totalGuidesForGame = 0;
+var guideCache = {};
 
 function mapGame(g) {
   return { id:g.id, name:g.name, nameZh:g.name_zh||g.name, desc:g.description, descZh:g.description_zh, img:g.image_url, tags:g.tags||[], tagsZh:g.tags_zh||[], badge:g.badge||'', count:typeof g.guide_count==='number'?g.guide_count:(g.count||0), display_order:g.display_order||0 };
@@ -478,6 +479,7 @@ var _gameFilter = '';
 
 function openGuideModal(id) {
   var g = guides.find(function(x) { return x.id === id; });
+  if (!g && currentGameFilter && guideCache[currentGameFilter]) g = guideCache[currentGameFilter].find(function(x) { return x.id === id; });
   if (!g) return;
   var z = LANG === 'zh';
   var body = z ? (g.bodyZh || g.body) : (g.body || g.bodyZh);
@@ -538,6 +540,9 @@ async function loadGuidesForGame(gameId, page) {
     totalGuidesForGame = (countData[0] && countData[0].count) || 0;
     hasMoreGuides = (offset + GUIDES_PAGE_SIZE) < totalGuidesForGame;
     var mapped = (data || []).map(mapGuide);
+    if (!guideCache[currentGameFilter]) guideCache[currentGameFilter] = [];
+    if (page === 0) { guideCache[currentGameFilter] = mapped; }
+    else { guideCache[currentGameFilter] = guideCache[currentGameFilter].concat(mapped); }
     renderGuidesList(mapped, page === 0);
     var gameObj = games.find(function(x) { return x.id === gameId; });
     var gn = z ? (gameObj ? gameObj.nameZh : gameId) : (gameObj ? gameObj.name : gameId);
