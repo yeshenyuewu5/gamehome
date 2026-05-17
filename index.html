@@ -232,7 +232,7 @@
       </div>
       <div class="hero-stats">
         <div class="hero-stat a d1"><div class="n">40+</div><div class="l" data-i18n="stat-games">Popular Games</div></div>
-        <div class="hero-stat a d2"><div class="n">267+</div><div class="l" data-i18n="stat-guides">Game Guides</div></div>
+        <div class="hero-stat a d2"><div class="n">4880+</div><div class="l" data-i18n="stat-guides">Game Guides</div></div>
         <div class="hero-stat a d3"><div class="n">50K+</div><div class="l" data-i18n="stat-players">Players Helped</div></div>
       </div>
     </div>
@@ -519,7 +519,7 @@ async function initSupabase() {
     
     const [gamesRes, guidesRes] = await Promise.all([
       fetch(base + '/games?select=*&order=display_order.asc&limit=50', { headers }),
-      fetch(base + '/guides?select=*&order=published_date.desc&limit=50', { headers })
+      fetch(base + '/guides?select=*&order=published_date.desc&limit=100', { headers })
     ]);
     
     if (!gamesRes.ok || !guidesRes.ok) throw new Error('Supabase request failed');
