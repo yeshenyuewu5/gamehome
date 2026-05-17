@@ -307,7 +307,7 @@ const FALLBACK_GUIDES = [
 let games = FALLBACK_GAMES;
 let guides = FALLBACK_GUIDES;
 
-/* ===== SUPABASE ===== */
+/* ===== SUPABASE (direct fetch — no CDN dependency) ===== */
 async function initSupabase() {
   if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
     document.getElementById('liveDot').style.background = '#f59e0b';
@@ -316,16 +316,25 @@ async function initSupabase() {
     return;
   }
   try {
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const headers = {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Accept': 'application/json'
+    };
+    const base = SUPABASE_URL + '/rest/v1';
     
     const [gamesRes, guidesRes] = await Promise.all([
-      supabase.from('games').select('*').order('display_order', { ascending: true }).limit(12),
-      supabase.from('guides').select('*').order('published_date', { ascending: false }).limit(10)
+      fetch(base + '/games?select=*&order=display_order.asc&limit=12', { headers }),
+      fetch(base + '/guides?select=*&order=published_date.desc&limit=10', { headers })
     ]);
     
-    if (gamesRes.data && gamesRes.data.length > 0) games = gamesRes.data;
-    if (guidesRes.data && guidesRes.data.length > 0) guides = guidesRes.data;
+    if (!gamesRes.ok || !guidesRes.ok) throw new Error('Supabase request failed');
+    
+    const gamesData = await gamesRes.json();
+    const guidesData = await guidesRes.json();
+    
+    if (gamesData && gamesData.length > 0) games = gamesData;
+    if (guidesData && guidesData.length > 0) guides = guidesData;
     
     document.getElementById('liveDot').style.background = '#22c55e';
     document.getElementById('liveDot').style.boxShadow = '0 0 8px #22c55e';
@@ -334,6 +343,7 @@ async function initSupabase() {
   } catch(e) {
     document.getElementById('liveDot').style.background = '#ef4444';
     document.getElementById('liveStatus').textContent = 'Supabase error — using fallback';
+    console.error('Supabase fetch failed:', e);
     renderAll();
   }
 }
