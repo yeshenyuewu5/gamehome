@@ -533,7 +533,7 @@ async function initSupabase() {
     
     const [gamesRes, guidesRes] = await Promise.all([
       fetch(base + '/games?select=*&order=display_order.asc&limit=50', { headers }),
-      fetch(base + '/guides?select=*&order=published_date.desc&limit=100', { headers })
+      fetch(base + '/guides?select=*&order=published_date.desc&limit=5000', { headers })
     ]);
     
     if (!gamesRes.ok || !guidesRes.ok) throw new Error('Supabase request failed');
@@ -567,7 +567,7 @@ function renderGames() {
   const q = document.getElementById('searchInput').value.toLowerCase();
   const z = LANG === 'zh';
   const filtered = games.filter(g => (z ? g.nameZh : g.name).toLowerCase().includes(q) || (z ? g.descZh : g.desc).toLowerCase().includes(q));
-  const display = showAllGames ? filtered : filtered.slice(0, 8);
+  const display = showAllGames ? filtered : filtered.slice(0, 12);
   grid.innerHTML = display.map((g, i) => `
     <a href="javascript:void(0)" onclick="filterByGame('${g.id}')" class="game-card a d${Math.min(i+1,6)}">
       <div class="game-img-wrap">
@@ -607,7 +607,7 @@ function renderGuides() {
   } else {
     source = guides;
   }
-  const display = showAllGuides ? source : source.slice(0, 12);
+  const display = showAllGuides ? source : source.slice(0, 20);
   if (display.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:14px;">No guides found.</div>';
   } else {
