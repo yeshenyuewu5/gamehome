@@ -11,11 +11,22 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #080b14; --bg2: #0d1220; --card: #131929; --card2: #1a2337;
+      /* Dark theme (default) */
+      --bg: #0f1320; --bg2: #161b2e; --card: #1c2238; --card2: #232b45;
       --cyan: #00d4ff; --orange: #ff6b35; --purple: #a855f7;
-      --text: #e8edf5; --sub: #8896aa; --muted: #4a5568;
-      --border: rgba(255,255,255,0.06); --r: 14px; --r-sm: 8px;
+      --text: #e8edf5; --sub: #94a3b8; --muted: #5b6a8a;
+      --border: rgba(255,255,255,0.07); --r: 14px; --r-sm: 8px;
       --font: 'Inter', 'Noto Sans SC', sans-serif;
+      --hero-glow-1: rgba(0,212,255,0.08); --hero-glow-2: rgba(168,85,247,0.06);
+    }
+    /* Light theme */
+    [data-theme="light"] {
+      --bg: #f0f2f6; --bg2: #e6e9f0; --card: #ffffff; --card2: #f7f8fc;
+      --cyan: #0891b2; --orange: #d97706; --purple: #7c3aed;
+      --text: #0f172a; --sub: #475569; --muted: #94a3b8;
+      --border: rgba(0,0,0,0.08); --r: 14px; --r-sm: 8px;
+      --font: 'Inter', 'Noto Sans SC', sans-serif;
+      --hero-glow-1: rgba(8,145,178,0.06); --hero-glow-2: rgba(124,58,237,0.04);
     }
     html { scroll-behavior: smooth; }
     body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.65; -webkit-font-smoothing: antialiased; }
@@ -37,7 +48,7 @@
     .topbar-right { display: flex; align-items: center; gap: 20px; }
 
     /* Nav */
-    .navbar { position: sticky; top: 0; z-index: 200; background: rgba(8,11,20,0.92); backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); }
+    .navbar { position: sticky; top: 0; z-index: 200; background: rgba(15,19,32,0.92); backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); }
     .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
     .logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
     .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--cyan), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; }
@@ -50,8 +61,8 @@
 
     /* Hero */
     .hero { padding: 96px 0 72px; text-align: center; position: relative; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 900px; height: 900px; background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 65%); pointer-events: none; }
-    .hero::after { content: ''; position: absolute; bottom: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; background: radial-gradient(circle, rgba(168,85,247,0.05) 0%, transparent 65%); pointer-events: none; }
+    .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 900px; height: 900px; background: radial-gradient(circle, var(--hero-glow-1) 0%, transparent 65%); pointer-events: none; }
+    .hero::after { content: ''; position: absolute; bottom: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; background: radial-gradient(circle, var(--hero-glow-2) 0%, transparent 65%); pointer-events: none; }
     .hero-label { display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; border-radius: 20px; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.25); font-size: 12px; font-weight: 700; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 28px; }
     .hero-label .dot { width: 6px; height: 6px; background: var(--cyan); border-radius: 50%; animation: pulse 2s infinite; }
     .hero h1 { font-size: clamp(34px, 5.5vw, 62px); font-weight: 900; line-height: 1.08; letter-spacing: -2px; margin-bottom: 20px; }
@@ -128,6 +139,11 @@
     .d1{animation-delay:0.05s} .d2{animation-delay:0.1s} .d3{animation-delay:0.15s} .d4{animation-delay:0.2s} .d5{animation-delay:0.25s} .d6{animation-delay:0.3s}
 
     /* Lang */
+
+    /* Theme toggle */
+    .theme-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .theme-btn.light { background: #fbbf24; color: #000; border-color: #f59e0b; }
+    .theme-btn.dark { background: var(--card); color: var(--sub); border-color: var(--border); }
     .lang-btn { padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1.5px solid var(--border); color: var(--sub); background: transparent; transition: 0.2s; cursor: pointer; }
     .lang-btn:hover, .lang-btn.on { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.07); }
 
@@ -170,9 +186,12 @@
       <span id="liveStatus">Connecting to Supabase...</span>
     </div>
     <div class="topbar-right">
-      <div class="lang-bar">
-        <button class="lang-btn on" id="btn-en" onclick="setLang('en')">EN</button>
-        <button class="lang-btn" id="btn-zh" onclick="setLang('zh')">中文</button>
+      <div class="theme-lang" style="display:flex;align-items:center;gap:8px;">
+        <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme" style="width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--card);color:var(--sub);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.2s;">☀</button>
+        <div class="lang-bar">
+          <button class="lang-btn on" id="btn-en" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" id="btn-zh" onclick="setLang('zh')">中文</button>
+        </div>
       </div>
     </div>
   </div>
@@ -341,6 +360,16 @@ const I18N = {
 };
 let LANG = 'en';
 
+function toggleTheme() {
+  var current = document.documentElement.getAttribute('data-theme') || 'dark';
+  var next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('toolhubb-theme', next);
+  var btn = document.getElementById('themeToggle');
+  btn.textContent = next === 'dark' ? '\u2600' : '\u263E';
+  btn.className = 'theme-btn ' + next;
+}
+
 function setLang(lang) {
   LANG = lang;
   document.querySelectorAll('[data-i18n]').forEach(e => { const t = I18N[lang][e.getAttribute('data-i18n')]; if(t) e.innerHTML = t; });
@@ -354,6 +383,13 @@ function setLang(lang) {
 document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('toolhubb-lang');
   setLang(saved || 'en');
+  const theme = localStorage.getItem('toolhubb-theme');
+  if (theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    var btn = document.getElementById('themeToggle');
+    btn.textContent = theme === 'dark' ? '\u2600' : '\u263E';
+    btn.className = 'theme-btn ' + theme;
+  }
 });
 
 /* ===== DATA ===== */
