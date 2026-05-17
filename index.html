@@ -231,7 +231,7 @@
   <section class="section" id="games">
     <div class="sec-head">
       <h2 class="sec-title" data-i18n="sec-games">🎮 Popular Games</h2>
-      <a href="javascript:void(0)" class="sec-link" onclick="showAllGames=!showAllGames;renderGames()" data-i18n="view-all">View All →</a>
+      <a href="javascript:void(0)" class="sec-link" onclick="_gameFilter='';showAllGames=!showAllGames;renderGames()" data-i18n="view-all">View All →</a>
     </div>
     <div class="game-grid" id="gameGrid"></div>
   </section>
@@ -247,7 +247,7 @@
   <section class="section" id="guides">
     <div class="sec-head">
       <h2 class="sec-title" data-i18n="sec-guides">📖 Latest Guides</h2>
-      <a href="javascript:void(0)" class="sec-link" onclick="showAllGuides=!showAllGuides;renderGuides()" data-i18n="browse-all">Browse All →</a>
+      <a href="javascript:void(0)" class="sec-link" onclick="_gameFilter='';showAllGuides=!showAllGuides;renderGuides()" data-i18n="browse-all">Browse All →</a>
     </div>
     <div class="guides-list" id="guidesList"></div>
   </section>
@@ -405,10 +405,24 @@ let showAllGames = false;
 let showAllGuides = false;
 
 function mapGame(g) {
-  return { id:g.id, name:g.name, nameZh:g.name_zh||g.name, desc:g.description, descZh:g.description_zh, img:g.image_url, tags:g.tags, tagsZh:g.tags_zh, badge:g.badge||'', count:g.guide_count||0, display_order:g.display_order||0 };
+  return { id:g.id, name:g.name, nameZh:g.name_zh||g.name, desc:g.description, descZh:g.description_zh, img:g.image_url, tags:g.tags||[], tagsZh:g.tags_zh||[], badge:g.badge||'', count:typeof g.guide_count==='number'?g.guide_count:(g.count||0), display_order:g.display_order||0 };
 }
 function mapGuide(g) {
-  return { id:g.id, game:g.game_name||'', gameZh:g.game_name_zh||'', title:g.title, titleZh:g.title_zh, thumb:g.thumbnail_url, read:String(g.read_time||5), date:g.published_date||'recently' };
+  // Try to find matching fallback for body content
+  var fb = FALLBACK_GUIDES.find(function(x) { return x.id === g.id; });
+  return {
+    id:g.id,
+    game:g.game_name||g.game||'',
+    gameZh:g.game_name_zh||g.game_zh||g.gameZh||'',
+    title:g.title,
+    titleZh:g.title_zh||g.titleZh||'',
+    thumb:g.thumbnail_url||g.thumb||'',
+    read:String(g.read_time||g.read||5),
+    date:g.published_date||g.date||'recently',
+    gameId:g.game_id||g.gameId||'',
+    body:g.body||(fb?fb.body:'<h2>Coming Soon</h2>'),
+    bodyZh:g.bodyZh||g.body_zh||(fb?fb.bodyZh:'<h2>即将发布</h2>')
+  };
 }
 
 /* ===== SUPABASE (direct fetch — no CDN dependency) ===== */
@@ -426,7 +440,7 @@ function openGuideModal(id) {
   var gameName = z ? g.gameZh : g.game;
   document.getElementById('modalContent').innerHTML = ''
     + '<div class="modal-header">'
-    + '<img class="modal-header-img" src="' + g.thumb + '" alt="' + title + '" onerror="this.style.display='none'">'
+    + '<img class="modal-header-img" src="' + g.thumb + '" alt="' + title + '" onerror="this.style.display='none'" style="background:var(--bg2);min-height:48px;">'
     + '<div class="modal-header-info">'
     + '<h3>' + title + '</h3>'
     + '<span>▶ ' + gameName + ' &middot; ' + (g.read || 5) + ' min read</span>'
@@ -532,7 +546,7 @@ function renderGames() {
   grid.innerHTML = display.map((g, i) => `
     <a href="javascript:void(0)" onclick="filterByGame('${g.id}')" class="game-card a d${Math.min(i+1,6)}">
       <div class="game-img-wrap">
-        <img class="game-img" src="${g.img}" alt="${z ? g.nameZh : g.name}" loading="lazy" onerror="this.style.display='none'">
+        <img class="game-img" src="${g.img}" alt="${z ? g.nameZh : g.name}" loading="lazy" onerror="this.style.display='none'" style="background:var(--bg2);min-height:48px;">
         ${g.badge ? `<span class="game-badge badge-${g.badge}">${g.badge==='hot'?'🔥 HOT':'✨ NEW'}</span>` : ''}
       </div>
       <div class="game-body">
@@ -556,7 +570,7 @@ function renderGuides() {
   const display = showAllGuides ? filtered : filtered.slice(0, 8);
   list.innerHTML = display.map((g, i) => `
     <div class="guide-row a d${Math.min(i+1,6)}" onclick="openGuideModal('${g.id}')" style="cursor:pointer;">
-      <img class="guide-thumb" src="${g.thumb}" alt="${z ? g.titleZh : g.title}" loading="lazy" onerror="this.style.display='none'">
+      <img class="guide-thumb" src="${g.thumb}" alt="${z ? g.titleZh : g.title}" loading="lazy" onerror="this.style.display='none'" style="background:var(--bg2);min-height:48px;">
       <div class="guide-info">
         <div class="guide-title">${z ? g.titleZh : g.title}</div>
         <div class="guide-meta">
