@@ -266,9 +266,12 @@
   <section class="section" id="guides">
     <div class="sec-head">
       <h2 class="sec-title" data-i18n="sec-guides">📖 Latest Guides</h2>
-      <a href="javascript:void(0)" class="sec-link" onclick="_gameFilter='';showAllGuides=!showAllGuides;renderGuides()" data-i18n="browse-all">Browse All →</a>
+      <span id="guidesCount" style="font-size:13px;color:var(--muted);font-weight:500;"></span>
     </div>
     <div class="guides-list" id="guidesList"></div>
+    <div id="loadMoreWrap" style="text-align:center;margin-top:20px;">
+      <button id="loadMoreBtn" class="btn-g" onclick="loadMoreGuides()" style="display:none;">↓ Load More</button>
+    </div>
   </section>
 
   <!-- Contact -->
@@ -440,6 +443,12 @@ let games = FALLBACK_GAMES;
 let guides = FALLBACK_GUIDES;
 let showAllGames = false;
 let showAllGuides = false;
+let currentGameFilter = '';
+let guidePage = 0;
+const GUIDES_PAGE_SIZE = 20;
+let hasMoreGuides = false;
+let totalGuidesForGame = 0;
+let _gameFilter = '';
 
 function mapGame(g) {
   return { id:g.id, name:g.name, nameZh:g.name_zh||g.name, desc:g.description, descZh:g.description_zh, img:g.image_url, tags:g.tags||[], tagsZh:g.tags_zh||[], badge:g.badge||'', count:typeof g.guide_count==='number'?g.guide_count:(g.count||0), display_order:g.display_order||0 };
@@ -509,12 +518,48 @@ function closeGuideModal() {
 function filterByGame(gameId) {
   var g = games.find(function(x) { return x.id === gameId; });
   if (!g) return;
-  _gameFilter = gameId;
-  showAllGuides = true;
+  currentGameFilter = gameId;
+  guidePage = 0;
   document.getElementById('searchInput').value = '';
-  renderGuides();
+  loadGuidesForGame(gameId, 0);
   var el = document.getElementById('guides');
   if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function loadGuidesForGame(gameId, page) {
+  var z = LANG === 'zh';
+  var offset = page * GUIDES_PAGE_SIZE;
+  var base = SUPABASE_URL + '/rest/v1';
+  var hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': '***' + SUPABASE_KEY, 'Accept': 'application/json' };
+  try {
+    var res = await fetch(base + '/guides?select=id,game_id,title,title_zh,thumbnail_url,read_time,published_date&game_id=eq.' + gameId + '&order=published_date.desc&limit=' + GUIDES_PAGE_SIZE + '&offset=' + offset, { headers: hdrs });
+    var data = await res.json();
+    var countRes = await fetch(base + '/guides?select=count&game_id=eq.' + gameId, { headers: hdrs });
+    var countData = await countRes.json();
+    totalGuidesForGame = (countData[0] && countData[0].count) || 0;
+    hasMoreGuides = (offset + GUIDES_PAGE_SIZE) < totalGuidesForGame;
+    var mapped = (data || []).map(mapGuide);
+    renderGuidesList(mapped, page === 0);
+    var gameObj = games.find(function(x) { return x.id === gameId; });
+    var gn = z ? (gameObj ? gameObj.nameZh : gameId) : (gameObj ? gameObj.name : gameId);
+    document.getElementById('guidesCount').innerHTML = totalGuidesForGame + ' guides for ' + gn;
+    var btn = document.getElementById('loadMoreBtn');
+    if (btn) {
+      btn.style.display = hasMoreGuides ? 'inline-block' : 'none';
+      if (hasMoreGuides) {
+        var remaining = totalGuidesForGame - ((guidePage + 1) * GUIDES_PAGE_SIZE);
+        btn.innerHTML = '\u2193 Load ' + Math.min(GUIDES_PAGE_SIZE, remaining) + ' More';
+      }
+    }
+  } catch(e) {
+    document.getElementById('guidesList').innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:14px;">Failed to load guides.</div>';
+  }
+}
+
+function loadMoreGuides() {
+  if (!hasMoreGuides || !currentGameFilter) return;
+  guidePage++;
+  loadGuidesForGame(currentGameFilter, guidePage);
 }
 
 async function initSupabase() {
@@ -534,7 +579,7 @@ async function initSupabase() {
     
     const [gamesRes, guidesRes] = await Promise.all([
       fetch(base + '/games?select=*&order=display_order.asc&limit=50', { headers }),
-      fetch(base + '/guides?select=*&order=published_date.desc&limit=5000', { headers })
+      fetch(base + '/guides?select=id,game_id,title,title_zh,thumbnail_url,read_time,published_date&order=published_date.desc&limit=30', { headers })
     ]);
     
     if (!gamesRes.ok || !guidesRes.ok) throw new Error('Supabase request failed');
@@ -589,47 +634,60 @@ function renderGames() {
 }
 
 function renderGuides() {
-  const list = document.getElementById('guidesList');
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const z = LANG === 'zh';
-  let source = [];
-  if (_gameFilter && !q) {
-    // Try exact match first, then fuzzy match by game name in title
-    source = guides.filter(g => g.gameId === _gameFilter || g.game === _gameFilter);
-    if (source.length === 0) {
-      var matchGame = games.find(function(x) { return x.id === _gameFilter; });
-      if (matchGame) {
-        var gameName = z ? matchGame.nameZh.toLowerCase() : matchGame.name.toLowerCase();
-        source = guides.filter(g => (g.game || '').toLowerCase().indexOf(gameName) >= 0 || (g.title || '').toLowerCase().indexOf(gameName) >= 0 || (g.titleZh || '').toLowerCase().indexOf(gameName) >= 0);
-      }
-    }
-  } else if (q) {
-    source = guides.filter(g => (z ? g.titleZh : g.title).toLowerCase().includes(q) || (z ? g.gameZh : g.game).toLowerCase().includes(q));
-  } else {
-    source = guides;
+  var list = document.getElementById('guidesList');
+  var q = document.getElementById('searchInput').value.toLowerCase();
+  var z = LANG === 'zh';
+  if (currentGameFilter) { return; }
+  if (q) {
+    var matches = guides.filter(function(g) { return (z ? g.titleZh : g.title).toLowerCase().includes(q) || (z ? g.gameZh : g.game).toLowerCase().includes(q); });
+    list.innerHTML = renderGuideRows(matches, z); return;
   }
-  const display = showAllGuides ? source : source.slice(0, 30);
-  if (display.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:14px;">No guides found.</div>';
-  } else {
-    list.innerHTML = display.map((g, i) => `
-    <div class="guide-row a d${Math.min(i+1,6)}" onclick="openGuideModal('${g.id}')" style="cursor:pointer;">
-      <img class="guide-thumb" src="${g.thumb}" alt="${z ? g.titleZh : g.title}" loading="lazy" onerror="this.style.display=&apos;none&apos;" style="background:var(--bg2);min-height:48px;">
-      <div class="guide-info">
-        <div class="guide-title">${z ? g.titleZh : g.title}</div>
-        <div class="guide-meta">
-          <span>🎮 ${z ? g.gameZh : g.game}</span>
-          <span>⏱ ${g.read || 5} min</span>
-          <span>🕐 ${g.date || 'recently'}</span>
-        </div>
-      </div>
-      <div class="guide-arrow">→</div>
-    </div>
-  `).join('');
-  }
+  var display = showAllGuides ? guides : guides.slice(0, 30);
+  list.innerHTML = renderGuideRows(display, z);
 }
 
-document.getElementById('searchInput').addEventListener('input', () => { _gameFilter = ''; renderGames(); renderGuides(); });
+function renderGuideRows(items, z) {
+  if (!items || items.length === 0) {
+    return '<div style="text-align:center;padding:32px;color:var(--muted);font-size:14px;">No guides found.</div>';
+  }
+  return items.map(function(g, i) {
+    var dl = Math.min(i + 1, 6);
+    return '<div class="guide-row a d' + dl + '" onclick="openGuideModal(&apos;' + g.id + '&apos;)" style="cursor:pointer;">'
+      + '<img class="guide-thumb" src="' + g.thumb + '" alt="' + (z ? g.titleZh : g.title) + '" loading="lazy" onerror="this.style.display=&apos;none&apos;" style="background:var(--bg2);min-height:48px;">'
+      + '<div class="guide-info">'
+      + '<div class="guide-title">' + (z ? g.titleZh : g.title) + '</div>'
+      + '<div class="guide-meta">'
+      + '<span>' + '\u25b6' + ' ' + (z ? g.gameZh : g.game) + '</span>'
+      + '<span>' + '\u23f1' + ' ' + (g.read || 5) + ' min</span>'
+      + '<span>' + '\ud83d\udd50' + ' ' + (g.date || 'recently') + '</span>'
+      + '</div></div>'
+      + '<div class="guide-arrow">\u2192</div>'
+      + '</div>';
+  }).join('');
+}
+
+function renderGuidesList(mapped, replace) {
+  var list = document.getElementById('guidesList');
+  var z = LANG === 'zh';
+  var h = mapped.map(function(g, i) {
+    var dl = Math.min(i + 1, 6);
+    return '<div class="guide-row a d' + dl + '" onclick="openGuideModal(&apos;' + g.id + '&apos;)" style="cursor:pointer;">'
+      + '<img class="guide-thumb" src="' + g.thumb + '" alt="' + (z ? g.titleZh : g.title) + '" loading="lazy" onerror="this.style.display=&apos;none&apos;" style="background:var(--bg2);min-height:48px;">'
+      + '<div class="guide-info">'
+      + '<div class="guide-title">' + (z ? g.titleZh : g.title) + '</div>'
+      + '<div class="guide-meta">'
+      + '<span>' + '\u25b6' + ' ' + (z ? g.gameZh : g.game) + '</span>'
+      + '<span>' + '\u23f1' + ' ' + (g.read || 5) + ' min</span>'
+      + '<span>' + '\ud83d\udd50' + ' ' + (g.date || 'recently') + '</span>'
+      + '</div></div>'
+      + '<div class="guide-arrow">\u2192</div>'
+      + '</div>';
+  }).join('');
+  if (replace) { list.innerHTML = h; }
+  else { list.innerHTML = list.innerHTML + h; }
+}
+
+document.getElementById('searchInput').addEventListener('input', function() { currentGameFilter = ''; renderGames(); renderGuides(); });
 function submitRequest(e) {
   e.preventDefault();
   // Honeypot: hidden field - bots fill it, humans don't
