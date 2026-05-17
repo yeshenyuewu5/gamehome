@@ -395,8 +395,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ===== DATA ===== */
 const FALLBACK_GAMES = [
-  { id:'rust', name:'Rust', nameZh:'Rust', desc:'Survival building, base layouts, loot routes & anti-raid strategies.', descZh:'生存建造、建家布局、物资路线、防抄家教程。', img:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80', tags:['Guide','Survival'], tagsZh:['攻略','生存'], badge:'hot', count:24 },
-  { id:'palworld', name:'Palworld', nameZh:'幻兽帕鲁', desc:'Breeding combos, base optimization, fast resource farming & boss tactics.', descZh:'配种攻略、基地布局、快速刷资源及BOSS打法。', img:'https://images.unsplash.com/photo-1614786269829-d24616faf56d?w=600&q=80', tags:['Breeding','Base'], tagsZh:['配种','基地'], badge:'hot', count:18 },
+  { id:'rust', name:'Rust', nameZh:'Rust', desc:'Survival building, base layouts, loot routes & anti-raid strategies.', descZh:'生存建造、建家布局、物资路线、防抄家教程。', img:'https://images.unsplash.com/photo-1552820728-8b83bb6b10f7?w=600&q=80', tags:['Guide','Survival'], tagsZh:['攻略','生存'], badge:'hot', count:24 },
+  { id:'palworld', name:'Palworld', nameZh:'幻兽帕鲁', desc:'Breeding combos, base optimization, fast resource farming & boss tactics.', descZh:'配种攻略、基地布局、快速刷资源及BOSS打法。', img:'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=600&q=80', tags:['Breeding','Base'], tagsZh:['配种','基地'], badge:'hot', count:18 },
   { id:'valorant', name:'Valorant', nameZh:'无畏契约', desc:'Agent abilities, map callouts, crosshair settings & ranked climbing strategies.', descZh:'角色技能、地图战术、准星设置、段位上分技巧。', img:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=80', tags:['FPS','Competitive'], tagsZh:['射击','竞技'], badge:'new', count:32 },
   { id:'cs2', name:'CS2', nameZh:'CS2', desc:'Grenade lineups, movement mechanics, weapon stats & competitive tips.', descZh:'道具投掷、身法技巧、枪械数据、各段位攻略。', img:'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&q=80', tags:['Tactical','Shooter'], tagsZh:['战术','射击'], badge:'', count:28 },
   { id:'freefire', name:'Free Fire', nameZh:'Free Fire', desc:'Headshot sensitivity, drop strategies, best characters & advanced settings.', descZh:'灵敏度设置、跳伞落点、最佳角色、枪法进阶设置。', img:'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&q=80', tags:['Mobile','Battle Royale'], tagsZh:['手游','吃鸡'], badge:'hot', count:15 },
@@ -513,7 +513,8 @@ function filterByGame(gameId) {
   showAllGuides = true;
   document.getElementById('searchInput').value = '';
   renderGuides();
-  document.getElementById('guides').scrollIntoView({ behavior: 'smooth' });
+  var el = document.getElementById('guides');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
 }
 
 async function initSupabase() {
@@ -607,7 +608,7 @@ function renderGuides() {
   } else {
     source = guides;
   }
-  const display = showAllGuides ? source : source.slice(0, 20);
+  const display = showAllGuides ? source : source.slice(0, 30);
   if (display.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:14px;">No guides found.</div>';
   } else {
