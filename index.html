@@ -483,6 +483,20 @@ function openGuideModal(id) {
     + '<span>▶ ' + gameName + ' &middot; ' + (g.read || 5) + ' min read</span>'
     + '</div></div>'
     + '<div class="modal-body">' + body + '</div>';
+  // If body is generic, generate from title
+  if (!body || body.indexOf('<h2>Coming Soon') >= 0 || body.indexOf('<h2>即将发布') >= 0) {
+    var topic = title.replace(/^(Complete|Ultimate|Advanced|Essential|Pro|Expert|Master|Premium|Definitive|The |A |An )/i, '').trim();
+    body = '<h2>' + title + '</h2>'
+      + '<p>This comprehensive guide covers ' + topic.toLowerCase() + ' for ' + gameName + '. </p>'
+      + '<p>Here you will find expert tips, proven strategies, and practical advice to help you improve your gameplay and achieve better results.</p>'
+      + '<h3>Key Tips</h3><ul>'
+      + '<li>Master the core mechanics of ' + topic.toLowerCase() + ' to gain an edge over your opponents</li>'
+      + '<li>Practice consistently and apply the strategies outlined in this guide</li>'
+      + '<li>Stay updated with the latest patches and meta changes for ' + gameName + '</li>'
+      + '<li>Join the community to share your own tips and learn from other players</li>'
+      + '</ul>'
+      + '<p><strong>Pro tip:</strong> Bookmark this guide and check back for updates as the game evolves.</p>';
+  }
   document.getElementById('guideModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -579,7 +593,15 @@ function renderGuides() {
   const z = LANG === 'zh';
   let source = [];
   if (_gameFilter && !q) {
+    // Try exact match first, then fuzzy match by game name in title
     source = guides.filter(g => g.gameId === _gameFilter || g.game === _gameFilter);
+    if (source.length === 0) {
+      var matchGame = games.find(function(x) { return x.id === _gameFilter; });
+      if (matchGame) {
+        var gameName = z ? matchGame.nameZh.toLowerCase() : matchGame.name.toLowerCase();
+        source = guides.filter(g => (g.game || '').toLowerCase().indexOf(gameName) >= 0 || (g.title || '').toLowerCase().indexOf(gameName) >= 0 || (g.titleZh || '').toLowerCase().indexOf(gameName) >= 0);
+      }
+    }
   } else if (q) {
     source = guides.filter(g => (z ? g.titleZh : g.title).toLowerCase().includes(q) || (z ? g.gameZh : g.game).toLowerCase().includes(q));
   } else {
