@@ -476,7 +476,7 @@ function openGuideModal(id) {
   var gameName = z ? g.gameZh : g.game;
   document.getElementById('modalContent').innerHTML = ''
     + '<div class="modal-header">'
-    + '<img class="modal-header-img" src="' + g.thumb + '" alt="' + title + '" onerror="this.style.display='none'" style="background:var(--bg2);min-height:48px;">'
+    + '<img class="modal-header-img" src="' + g.thumb + '" alt="' + title + '" onerror="this.style.display=&apos;none&apos;" style="background:var(--bg2);min-height:48px;">'
     + '<div class="modal-header-info">'
     + '<h3>' + title + '</h3>'
     + '<span>▶ ' + gameName + ' &middot; ' + (g.read || 5) + ' min read</span>'
@@ -582,7 +582,7 @@ function renderGames() {
   grid.innerHTML = display.map((g, i) => `
     <a href="javascript:void(0)" onclick="filterByGame('${g.id}')" class="game-card a d${Math.min(i+1,6)}">
       <div class="game-img-wrap">
-        <img class="game-img" src="${g.img}" alt="${z ? g.nameZh : g.name}" loading="lazy" onerror="this.style.display='none'" style="background:var(--bg2);min-height:48px;">
+        <img class="game-img" src="${g.img}" alt="${z ? g.nameZh : g.name}" loading="lazy" onerror="this.style.display=&apos;none&apos;" style="background:var(--bg2);min-height:48px;">
         ${g.badge ? `<span class="game-badge badge-${g.badge}">${g.badge==='hot'?'🔥 HOT':'✨ NEW'}</span>` : ''}
       </div>
       <div class="game-body">
@@ -606,7 +606,7 @@ function renderGuides() {
   const display = showAllGuides ? filtered : filtered.slice(0, 8);
   list.innerHTML = display.map((g, i) => `
     <div class="guide-row a d${Math.min(i+1,6)}" onclick="openGuideModal('${g.id}')" style="cursor:pointer;">
-      <img class="guide-thumb" src="${g.thumb}" alt="${z ? g.titleZh : g.title}" loading="lazy" onerror="this.style.display='none'" style="background:var(--bg2);min-height:48px;">
+      <img class="guide-thumb" src="${g.thumb}" alt="${z ? g.titleZh : g.title}" loading="lazy" onerror="this.style.display=&apos;none&apos;" style="background:var(--bg2);min-height:48px;">
       <div class="guide-info">
         <div class="guide-title">${z ? g.titleZh : g.title}</div>
         <div class="guide-meta">
