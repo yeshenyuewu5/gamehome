@@ -448,7 +448,6 @@ let guidePage = 0;
 const GUIDES_PAGE_SIZE = 20;
 let hasMoreGuides = false;
 let totalGuidesForGame = 0;
-let _gameFilter = '';
 
 function mapGame(g) {
   return { id:g.id, name:g.name, nameZh:g.name_zh||g.name, desc:g.description, descZh:g.description_zh, img:g.image_url, tags:g.tags||[], tagsZh:g.tags_zh||[], badge:g.badge||'', count:typeof g.guide_count==='number'?g.guide_count:(g.count||0), display_order:g.display_order||0 };
