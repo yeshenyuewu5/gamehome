@@ -231,8 +231,8 @@
         <a href="#guides" class="btn-g">📖 <span data-i18n="btn-latest">Latest Guides</span></a>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat a d1"><div class="n">14+</div><div class="l" data-i18n="stat-games">Popular Games</div></div>
-        <div class="hero-stat a d2"><div class="n">500+</div><div class="l" data-i18n="stat-guides">Game Guides</div></div>
+        <div class="hero-stat a d1"><div class="n">40+</div><div class="l" data-i18n="stat-games">Popular Games</div></div>
+        <div class="hero-stat a d2"><div class="n">267+</div><div class="l" data-i18n="stat-guides">Game Guides</div></div>
         <div class="hero-stat a d3"><div class="n">50K+</div><div class="l" data-i18n="stat-players">Players Helped</div></div>
       </div>
     </div>
@@ -518,8 +518,8 @@ async function initSupabase() {
     const base = SUPABASE_URL + '/rest/v1';
     
     const [gamesRes, guidesRes] = await Promise.all([
-      fetch(base + '/games?select=*&order=display_order.asc&limit=12', { headers }),
-      fetch(base + '/guides?select=*&order=published_date.desc&limit=10', { headers })
+      fetch(base + '/games?select=*&order=display_order.asc&limit=50', { headers }),
+      fetch(base + '/guides?select=*&order=published_date.desc&limit=50', { headers })
     ]);
     
     if (!gamesRes.ok || !guidesRes.ok) throw new Error('Supabase request failed');
@@ -553,7 +553,7 @@ function renderGames() {
   const q = document.getElementById('searchInput').value.toLowerCase();
   const z = LANG === 'zh';
   const filtered = games.filter(g => (z ? g.nameZh : g.name).toLowerCase().includes(q) || (z ? g.descZh : g.desc).toLowerCase().includes(q));
-  const display = showAllGames ? filtered : filtered.slice(0, 6);
+  const display = showAllGames ? filtered : filtered.slice(0, 8);
   grid.innerHTML = display.map((g, i) => `
     <a href="javascript:void(0)" onclick="filterByGame('${g.id}')" class="game-card a d${Math.min(i+1,6)}">
       <div class="game-img-wrap">
@@ -585,7 +585,7 @@ function renderGuides() {
   } else {
     source = guides;
   }
-  const display = showAllGuides ? source : source.slice(0, 8);
+  const display = showAllGuides ? source : source.slice(0, 12);
   if (display.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:14px;">No guides found.</div>';
   } else {
