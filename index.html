@@ -320,12 +320,12 @@ async function initSupabase() {
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     
     const [gamesRes, guidesRes] = await Promise.all([
-      supabase.from('games').select('*').order('order', { ascending: true }).limit(12),
-      supabase.from('guides').select('*').order('date', { ascending: false }).limit(10)
+      supabase.from('games').select('*').order('display_order', { ascending: true }).limit(12),
+      supabase.from('guides').select('*').order('published_date', { ascending: false }).limit(10)
     ]);
     
-    if (gamesRes.data) games = gamesRes.data;
-    if (guidesRes.data) guides = guidesRes.data;
+    if (gamesRes.data && gamesRes.data.length > 0) games = gamesRes.data;
+    if (guidesRes.data && guidesRes.data.length > 0) guides = guidesRes.data;
     
     document.getElementById('liveDot').style.background = '#22c55e';
     document.getElementById('liveDot').style.boxShadow = '0 0 8px #22c55e';
