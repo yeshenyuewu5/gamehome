@@ -444,17 +444,17 @@ function mapGame(g) {
   return { id:g.id, name:g.name, nameZh:g.name_zh||g.name, desc:g.description, descZh:g.description_zh, img:g.image_url, tags:g.tags||[], tagsZh:g.tags_zh||[], badge:g.badge||'', count:typeof g.guide_count==='number'?g.guide_count:(g.count||0), display_order:g.display_order||0 };
 }
 function mapGuide(g) {
-  // Try to find matching fallback for body content
   var fb = FALLBACK_GUIDES.find(function(x) { return x.id === g.id; });
+  var gm = games.find(function(x) { return x.id === g.game_id; });
   return {
     id:g.id,
-    game:g.game_name||g.game||'',
-    gameZh:g.game_name_zh||g.game_zh||g.gameZh||'',
+    game:gm ? gm.name : (g.game||(fb?fb.game:'')),
+    gameZh:gm ? gm.nameZh : (g.gameZh||(fb?fb.gameZh:'')),
     title:g.title,
     titleZh:g.title_zh||g.titleZh||'',
     thumb:g.thumbnail_url||g.thumb||'',
     read:String(g.read_time||g.read||5),
-    date:g.published_date||g.date||'recently',
+    date:typeof g.published_date === 'string' ? g.published_date.slice(0,10) : (g.date||'recently'),
     gameId:g.game_id||g.gameId||'',
     body:g.body||(fb?fb.body:'<h2>Coming Soon</h2>'),
     bodyZh:g.bodyZh||g.body_zh||(fb?fb.bodyZh:'<h2>即将发布</h2>')
