@@ -280,14 +280,15 @@
       <p style="color:var(--sub);margin-bottom:28px;font-size:15px;line-height:1.7;" data-i18n="contact-desc">
         Can't find the guide you need? Drop us a request and we'll publish it within 48 hours. Free for everyone.
       </p>
-      <a href="mailto:1179034943@qq.com" class="btn-c" style="margin-bottom:14px;">
-        📩 <span data-i18n="contact-email">1179034943@qq.com</span>
+      <a href="mailto:guides@toolhubb.top" class="btn-c" style="margin-bottom:14px;">
+        📩 <span data-i18n="contact-email">guides@toolhubb.top</span>
       </a>
       <p style="color:var(--muted);font-size:13px;margin-top:10px;" data-i18n="contact-hint">
         Or use the request form below
       </p>
       <div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;">
-        <form onsubmit="submitRequest(event)" style="display:flex;flex-direction:column;gap:16px;">
+        <form onsubmit="submitRequest(event)" style="display:flex;flex-direction:column;gap:16px;position:relative;">
+          <input type="text" id="reqHP" style="position:absolute;left:-9999px;top:-9999px;opacity:0;" tabindex="-1" autocomplete="off">
           <input type="text" id="reqName" placeholder="Your Name" style="width:100%;padding:12px 16px;border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font);outline:none;" placeholder-i18n="req-name">
           <input type="text" id="reqGame" placeholder="Game Name (e.g. Rust)" style="width:100%;padding:12px 16px;border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font);outline:none;" placeholder-i18n="req-game">
           <textarea id="reqDesc" rows="3" placeholder="What guide do you need?" style="width:100%;padding:12px 16px;border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font);outline:none;resize:vertical;" placeholder-i18n="req-desc"></textarea>
@@ -344,7 +345,7 @@ const I18N = {
     "nav-games":"Games","nav-guides":"Latest Guides","nav-about":"About","nav-contact":"Contact",
     "sec-games":"🎮 Popular Games","sec-guides":"📖 Latest Guides","view-all":"View All →","browse-all":"Browse All →",
     "cta-title":"📬 Missing Your Game?","cta-desc":"Request any game guide — we publish within 48 hours. Free for all players worldwide.","cta-btn":"📝 Request a Guide",
-    "footer":"Free game guides for players worldwide.","game-count":"guides","contact-title":"Request a Guide","contact-desc":"Can't find the guide you need? Drop us a request and we'll publish it within 48 hours. Free for everyone.","contact-email":"1179034943@qq.com","contact-hint":"Or use the request form below","req-name":"Your Name","req-game":"Game Name (e.g. Rust)","req-desc":"What guide do you need?","req-submit":"🚀 Send Request","req-ok":"Request sent! We'll publish your guide within 48 hours.","about-desc":"ToolHubb is a free game guides platform built for overseas players. We publish expert-written strategy guides, best settings, tier lists, and walkthroughs for the world's most popular games. Updated daily \u2014 free forever."
+    "footer":"Free game guides for players worldwide.","game-count":"guides","contact-title":"Request a Guide","contact-desc":"Can't find the guide you need? Drop us a request and we'll publish it within 48 hours. Free for everyone.","contact-email":"guides@toolhubb.top","contact-hint":"Or use the request form below","req-name":"Your Name","req-game":"Game Name (e.g. Rust)","req-desc":"What guide do you need?","req-submit":"🚀 Send Request","req-ok":"Request sent! We'll publish your guide within 48 hours.","about-desc":"ToolHubb is a free game guides platform built for overseas players. We publish expert-written strategy guides, best settings, tier lists, and walkthroughs for the world's most popular games. Updated daily \u2014 free forever."
   },
   zh: {
     "hero-label":"实时更新","hero-t1":"用专业攻略","hero-t2":"称霸你的游戏",
@@ -355,7 +356,7 @@ const I18N = {
     "nav-games":"游戏","nav-guides":"最新攻略","nav-about":"关于","nav-contact":"联系",
     "sec-games":"🎮 热门游戏","sec-guides":"📖 最新攻略","view-all":"查看全部 →","browse-all":"浏览全部 →",
     "cta-title":"📬 想看某个游戏的攻略？","cta-desc":"提交你想要的攻略，我们将在48小时内发布。全部免费！","cta-btn":"📝 提交请求",
-    "footer":"为全球玩家打造的免费游戏攻略平台。","game-count":"篇攻略","contact-title":"提交请求","contact-desc":"找不到你想要的攻略？告诉我们，48小时内发布。全部免费。","contact-email":"1179034943@qq.com","contact-hint":"或使用下方表单提交","req-name":"你的名字","req-game":"游戏名称（如 Rust）","req-desc":"需要什么攻略？","req-submit":"🚀 提交请求","req-ok":"请求已提交！我们会在48小时内发布攻略。","about-desc":"ToolHubb 是为海外玩家打造的免费游戏攻略平台。我们提供专家撰写的策略攻略、最佳设置、强度榜和通关教程，覆盖全球最热门游戏。每日更新，永久免费。"
+    "footer":"为全球玩家打造的免费游戏攻略平台。","game-count":"篇攻略","contact-title":"提交请求","contact-desc":"找不到你想要的攻略？告诉我们，48小时内发布。全部免费。","contact-email":"guides@toolhubb.top","contact-hint":"或使用下方表单提交","req-name":"你的名字","req-game":"游戏名称（如 Rust）","req-desc":"需要什么攻略？","req-submit":"🚀 提交请求","req-ok":"请求已提交！我们会在48小时内发布攻略。","about-desc":"ToolHubb 是为海外玩家打造的免费游戏攻略平台。我们提供专家撰写的策略攻略、最佳设置、强度榜和通关教程，覆盖全球最热门游戏。每日更新，永久免费。"
   }
 };
 let LANG = 'en';
@@ -608,10 +609,44 @@ function renderGuides() {
 document.getElementById('searchInput').addEventListener('input', () => { _gameFilter = ''; renderGames(); renderGuides(); });
 function submitRequest(e) {
   e.preventDefault();
-  document.getElementById('reqFeedback').style.display = 'block';
-  document.getElementById('reqName').value = '';
-  document.getElementById('reqGame').value = '';
-  document.getElementById('reqDesc').value = '';
+  // Honeypot: hidden field - bots fill it, humans don't
+  var hp = document.getElementById('reqHP').value;
+  if (hp) { document.getElementById('reqFeedback').textContent = 'Thanks!'; document.getElementById('reqFeedback').style.display = 'block'; return; }
+  // Rate limit: 1 submission per 5 minutes
+  var last = localStorage.getItem('toolhubb-last-request');
+  if (last && Date.now() - parseInt(last) < 300000) {
+    var left = Math.ceil((300000 - (Date.now() - parseInt(last))) / 60000);
+    document.getElementById('reqFeedback').textContent = 'Please wait ' + (left || 1) + ' min before submitting again.';
+    document.getElementById('reqFeedback').style.display = 'block'; return;
+  }
+  var name = document.getElementById('reqName').value.trim();
+  var game = document.getElementById('reqGame').value.trim();
+  var desc = document.getElementById('reqDesc').value.trim();
+  if (!game) return;
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'https://hppmhwetnroauxmpccmq.supabase.co/rest/v1/requests', true);
+  xhr.setRequestHeader('apikey', SUPABASE_KEY);
+  xhr.setRequestHeader('Authorization', 'Bearer ' + SUPABASE_KEY);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('Prefer', 'return=minimal');
+  xhr.onload = function() {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      localStorage.setItem('toolhubb-last-request', String(Date.now()));
+      document.getElementById('reqFeedback').textContent = 'Thanks! We will publish within 48 hours.';
+      document.getElementById('reqFeedback').style.display = 'block';
+      document.getElementById('reqName').value = '';
+      document.getElementById('reqGame').value = '';
+      document.getElementById('reqDesc').value = '';
+    } else {
+      document.getElementById('reqFeedback').textContent = 'Submission failed. Please email guides@toolhubb.top.';
+      document.getElementById('reqFeedback').style.display = 'block';
+    }
+  };
+  xhr.onerror = function() {
+    document.getElementById('reqFeedback').textContent = 'Network error. Email guides@toolhubb.top.';
+    document.getElementById('reqFeedback').style.display = 'block';
+  };
+  xhr.send(JSON.stringify({name:name, game:game, description:desc}));
 }
 
 initSupabase();
