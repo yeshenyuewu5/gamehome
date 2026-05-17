@@ -214,7 +214,7 @@
   <section class="section" id="games">
     <div class="sec-head">
       <h2 class="sec-title" data-i18n="sec-games">🎮 Popular Games</h2>
-      <a href="#" class="sec-link" data-i18n="view-all">View All →</a>
+      <a href="javascript:void(0)" class="sec-link" onclick="showAllGames=!showAllGames;renderGames()" data-i18n="view-all">View All →</a>
     </div>
     <div class="game-grid" id="gameGrid"></div>
   </section>
@@ -230,13 +230,58 @@
   <section class="section" id="guides">
     <div class="sec-head">
       <h2 class="sec-title" data-i18n="sec-guides">📖 Latest Guides</h2>
-      <a href="#" class="sec-link" data-i18n="browse-all">Browse All →</a>
+      <a href="javascript:void(0)" class="sec-link" onclick="showAllGuides=!showAllGuides;renderGuides()" data-i18n="browse-all">Browse All →</a>
     </div>
     <div class="guides-list" id="guidesList"></div>
   </section>
 
+  <!-- Contact -->
+  <section class="section" id="contact">
+    <div class="sec-head">
+      <h2 class="sec-title">📫 <span data-i18n="contact-title">Request a Guide</span></h2>
+    </div>
+    <div style="max-width:600px;margin:0 auto;text-align:center;">
+      <p style="color:var(--sub);margin-bottom:28px;font-size:15px;line-height:1.7;" data-i18n="contact-desc">
+        Can't find the guide you need? Drop us a request and we'll publish it within 48 hours. Free for everyone.
+      </p>
+      <a href="mailto:guides@toolhubb.top" class="btn-c" style="margin-bottom:14px;">
+        📩 <span data-i18n="contact-email">guides@toolhubb.top</span>
+      </a>
+      <p style="color:var(--muted);font-size:13px;margin-top:10px;" data-i18n="contact-hint">
+        Or use the request form below
+      </p>
+      <div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;">
+        <form onsubmit="submitRequest(event)" style="display:flex;flex-direction:column;gap:16px;">
+          <input type="text" id="reqName" placeholder="Your Name" style="width:100%;padding:12px 16px;border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font);outline:none;" placeholder-i18n="req-name">
+          <input type="text" id="reqGame" placeholder="Game Name (e.g. Rust)" style="width:100%;padding:12px 16px;border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font);outline:none;" placeholder-i18n="req-game">
+          <textarea id="reqDesc" rows="3" placeholder="What guide do you need?" style="width:100%;padding:12px 16px;border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font);outline:none;resize:vertical;" placeholder-i18n="req-desc"></textarea>
+          <button type="submit" class="btn-c" style="align-self:center;" data-i18n="req-submit">🚀 Send Request</button>
+        </form>
+        <p id="reqFeedback" style="color:var(--cyan);font-size:14px;margin-top:12px;display:none;" data-i18n="req-ok">Request sent! We'll publish your guide within 48 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section" id="about" style="padding-top:0;">
+    <hr style="border:none;border-top:1px solid var(--border);margin-bottom:40px;">
+    <div style="max-width:700px;margin:0 auto;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;margin:0 auto 20px;">TH</div>
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">About ToolHubb</h2>
+      <p style="color:var(--sub);font-size:15px;line-height:1.8;" data-i18n="about-desc">
+        ToolHubb is a free game guides platform built for overseas players. We publish expert-written strategy guides, 
+        best settings, tier lists, and walkthroughs for the world's most popular games. Updated daily — free forever.
+      </p>
+      <div style="display:flex;justify-content:center;gap:40px;margin-top:24px;">
+        <div><div style="font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">10+</div><div style="font-size:12px;color:var(--muted);">Games</div></div>
+        <div><div style="font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">26</div><div style="font-size:12px;color:var(--muted);">Guides</div></div>
+        <div><div style="font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Free</div><div style="font-size:12px;color:var(--muted);">Always</div></div>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
-  <footer class="footer" id="about">
+  <footer class="footer">
     <p>© 2026 ToolHubb — <span data-i18n="footer">Free game guides for players worldwide.</span></p>
   </footer>
 
@@ -256,7 +301,7 @@ const I18N = {
     "nav-games":"Games","nav-guides":"Latest Guides","nav-about":"About","nav-contact":"Contact",
     "sec-games":"🎮 Popular Games","sec-guides":"📖 Latest Guides","view-all":"View All →","browse-all":"Browse All →",
     "cta-title":"📬 Missing Your Game?","cta-desc":"Request any game guide — we publish within 48 hours. Free for all players worldwide.","cta-btn":"📝 Request a Guide",
-    "footer":"Free game guides for players worldwide.","game-count":"guides"
+    "footer":"Free game guides for players worldwide.","game-count":"guides","contact-title":"Request a Guide","contact-desc":"Can't find the guide you need? Drop us a request and we'll publish it within 48 hours. Free for everyone.","contact-email":"guides@toolhubb.top","contact-hint":"Or use the request form below","req-name":"Your Name","req-game":"Game Name (e.g. Rust)","req-desc":"What guide do you need?","req-submit":"🚀 Send Request","req-ok":"Request sent! We'll publish your guide within 48 hours.","about-desc":"ToolHubb is a free game guides platform built for overseas players. We publish expert-written strategy guides, best settings, tier lists, and walkthroughs for the world's most popular games. Updated daily \u2014 free forever."
   },
   zh: {
     "hero-label":"实时更新","hero-t1":"用专业攻略","hero-t2":"称霸你的游戏",
@@ -267,7 +312,7 @@ const I18N = {
     "nav-games":"游戏","nav-guides":"最新攻略","nav-about":"关于","nav-contact":"联系",
     "sec-games":"🎮 热门游戏","sec-guides":"📖 最新攻略","view-all":"查看全部 →","browse-all":"浏览全部 →",
     "cta-title":"📬 想看某个游戏的攻略？","cta-desc":"提交你想要的攻略，我们将在48小时内发布。全部免费！","cta-btn":"📝 提交请求",
-    "footer":"为全球玩家打造的免费游戏攻略平台。","game-count":"篇攻略"
+    "footer":"为全球玩家打造的免费游戏攻略平台。","game-count":"篇攻略","contact-title":"提交请求","contact-desc":"找不到你想要的攻略？告诉我们，48小时内发布。全部免费。","contact-email":"guides@toolhubb.top","contact-hint":"或使用下方表单提交","req-name":"你的名字","req-game":"游戏名称（如 Rust）","req-desc":"需要什么攻略？","req-submit":"🚀 提交请求","req-ok":"请求已提交！我们会在48小时内发布攻略。","about-desc":"ToolHubb 是为海外玩家打造的免费游戏攻略平台。我们提供专家撰写的策略攻略、最佳设置、强度榜和通关教程，覆盖全球最热门游戏。每日更新，永久免费。"
   }
 };
 let LANG = 'en';
@@ -332,6 +377,8 @@ const FALLBACK_GUIDES = [
 
 let games = FALLBACK_GAMES;
 let guides = FALLBACK_GUIDES;
+let showAllGames = false;
+let showAllGuides = false;
 
 function mapGame(g) {
   return { id:g.id, name:g.name, nameZh:g.name_zh||g.name, desc:g.description, descZh:g.description_zh, img:g.image_url, tags:g.tags, tagsZh:g.tags_zh, badge:g.badge||'', count:g.guide_count||0, display_order:g.display_order||0 };
@@ -392,8 +439,9 @@ function renderGames() {
   const q = document.getElementById('searchInput').value.toLowerCase();
   const z = LANG === 'zh';
   const filtered = games.filter(g => (z ? g.nameZh : g.name).toLowerCase().includes(q) || (z ? g.descZh : g.desc).toLowerCase().includes(q));
-  grid.innerHTML = filtered.map((g, i) => `
-    <div class="game-card a d${Math.min(i+1,6)}">
+  const display = showAllGames ? filtered : filtered.slice(0, 6);
+  grid.innerHTML = display.map((g, i) => `
+    <a href="/guides/${g.id}/" class="game-card a d${Math.min(i+1,6)}">
       <div class="game-img-wrap">
         <img class="game-img" src="${g.img}" alt="${z ? g.nameZh : g.name}" loading="lazy" onerror="this.style.display='none'">
         ${g.badge ? `<span class="game-badge badge-${g.badge}">${g.badge==='hot'?'🔥 HOT':'✨ NEW'}</span>` : ''}
@@ -407,15 +455,18 @@ function renderGames() {
           <span class="game-arrow">→</span>
         </div>
       </div>
-    </div>
+    </a>
   `).join('');
 }
 
 function renderGuides() {
   const list = document.getElementById('guidesList');
   const z = LANG === 'zh';
-  list.innerHTML = guides.map((g, i) => `
-    <div class="guide-row a d${Math.min(i+1,5)}">
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = guides.filter(g => (z ? g.titleZh : g.title).toLowerCase().includes(q) || (z ? g.gameZh : g.game).toLowerCase().includes(q));
+  const display = showAllGuides ? filtered : filtered.slice(0, 8);
+  list.innerHTML = display.map((g, i) => `
+    <a href="/guide/${g.id}/" class="guide-row a d${Math.min(i+1,6)}">
       <img class="guide-thumb" src="${g.thumb}" alt="${z ? g.titleZh : g.title}" loading="lazy" onerror="this.style.display='none'">
       <div class="guide-info">
         <div class="guide-title">${z ? g.titleZh : g.title}</div>
@@ -426,11 +477,19 @@ function renderGuides() {
         </div>
       </div>
       <div class="guide-arrow">→</div>
-    </div>
+    </a>
   `).join('');
 }
 
-document.getElementById('searchInput').addEventListener('input', renderGames);
+document.getElementById('searchInput').addEventListener('input', () => { renderGames(); renderGuides(); });
+function submitRequest(e) {
+  e.preventDefault();
+  document.getElementById('reqFeedback').style.display = 'block';
+  document.getElementById('reqName').value = '';
+  document.getElementById('reqGame').value = '';
+  document.getElementById('reqDesc').value = '';
+}
+
 initSupabase();
 </script>
 </body>
