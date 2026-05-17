@@ -487,17 +487,65 @@ function openGuideModal(id) {
   var gameName = z ? g.gameZh : g.game;
   // If body is generic, generate from title  
   if (!body || body.indexOf('<h2>Coming Soon') >= 0 || body.indexOf('<h2>即将发布') >= 0) {
-    var topic = title.replace(/^(Complete|Ultimate|Advanced|Essential|Pro|Expert|Master|Premium|Definitive|The |A |An )/i, '').trim();
-    body = '<h2>' + title + '</h2>'
-      + '<p>This comprehensive guide covers ' + topic.toLowerCase() + ' for ' + gameName + '. </p>'
-      + '<p>Here you will find expert tips, proven strategies, and practical advice to help you improve your gameplay and achieve better results.</p>'
-      + '<h3>Key Tips</h3><ul>'
-      + '<li>Master the core mechanics of ' + topic.toLowerCase() + ' to gain an edge over your opponents</li>'
-      + '<li>Practice consistently and apply the strategies outlined in this guide</li>'
-      + '<li>Stay updated with the latest patches and meta changes for ' + gameName + '</li>'
-      + '<li>Join the community to share your own tips and learn from other players</li>'
-      + '</ul>'
-      + '<p><strong>Pro tip:</strong> Bookmark this guide and check back for updates as the game evolves.</p>';
+    var topic = title.replace(/^(Complete|Ultimate|Advanced|Essential|Pro|Expert|Master|Premium|Definitive|The |A |An )/i, '').trim().toLowerCase();
+    var tl = topic;
+    var gn = gameName;
+    if (z) {
+      // Chinese content
+      body = '<h2>' + title + '</h2>'
+        + '<p>本攻略详细介绍了' + tl + '的各种技巧和策略，适合' + gn + '玩家参考。</p>'
+        + '<p>无论你是新手还是老玩家，这篇攻略都能帮助你提升游戏水平，掌握更多实用技巧。</p>'
+        + '<h3>关键技巧</h3><ul>'
+        + '<li>熟练掌握' + tl + '的核心机制，在对局中占据优势</li>'
+        + '<li>多练多用，把攻略中的策略应用到实战</li>'
+        + '<li>关注' + gn + '最新版本更新，随时调整策略</li>'
+        + '<li>参加社区讨论，与其他玩家交流心得</li>'
+        + '</ul>'
+        + '<p><strong>专业建议：</strong>收藏本篇攻略，随时查看更新。</p>';
+    } else {
+      // English content - varied by keywords in title
+      var tips = [
+        'Practice consistently to master the techniques described in this guide',
+        'Watch replays of top players to learn advanced ' + tl + ' strategies',
+        'Join community discussions to share your own tips and learn from others',
+        'Keep up with the latest patches and meta changes for ' + gn,
+        'Experiment with different approaches to find what works best for you'
+      ];
+      var proTip = 'Bookmark this guide and check back for updates as the game evolves.';
+      var desc = 'This comprehensive guide covers ' + tl + ' for ' + gn + '. ';
+      
+      if (tl.indexOf('guide') >= 0 || tl.indexOf('tips') >= 0 || tl.indexOf('strat') >= 0) {
+        desc = 'A complete walkthrough covering everything you need to know about ' + tl + ' in ' + gn + '. ';
+      } else if (tl.indexOf('build') >= 0 || tl.indexOf('setup') >= 0 || tl.indexOf('layout') >= 0 || tl.indexOf('design') >= 0) {
+        desc = 'Step-by-step instructions for creating the perfect ' + tl + ' in ' + gn + '. ';
+      } else if (tl.indexOf('setting') >= 0 || tl.indexOf('config') >= 0 || tl.indexOf('sensitivity') >= 0) {
+        desc = 'Optimize your ' + tl + ' in ' + gn + ' for the best performance and experience. ';
+      } else if (tl.indexOf('beginner') >= 0 || tl.indexOf('start') >= 0 || tl.indexOf('first') >= 0 || tl.indexOf('new') >= 0) {
+        desc = 'Everything you need to know as a new player starting ' + tl + ' in ' + gn + '. ';
+      } else if (tl.indexOf('boss') >= 0 || tl.indexOf('raid') >= 0 || tl.indexOf('heist') >= 0 || tl.indexOf('dungeon') >= 0) {
+        desc = 'Defeat your toughest challenges with this expert ' + tl + ' strategy guide for ' + gn + '. ';
+      } else if (tl.indexOf('weapon') >= 0 || tl.indexOf('gun') >= 0 || tl.indexOf('loadout') >= 0) {
+        desc = 'Find the best ' + tl + ' loadouts and builds to dominate in ' + gn + '. ';
+      } else if (tl.indexOf('tier') >= 0 || tl.indexOf('rank') >= 0 || tl.indexOf('list') >= 0) {
+        desc = 'Our complete ' + tl + ' ranks every option so you know what is best in ' + gn + '. ';
+      } else if (tl.indexOf('farm') >= 0 || tl.indexOf('grind') >= 0 || tl.indexOf('money') >= 0 || tl.indexOf('resource') >= 0) {
+        desc = 'The most efficient ' + tl + ' routes and methods to maximize your gains in ' + gn + '. ';
+      } else if (tl.indexOf('pvp') >= 0 || tl.indexOf('combat') >= 0 || tl.indexOf('fight') >= 0) {
+        desc = 'Improve your combat skills with these ' + tl + ' techniques for ' + gn + '. ';
+      } else if (tl.indexOf('map') >= 0 || tl.indexOf('drop') >= 0 || tl.indexOf('rotation') >= 0) {
+        desc = 'Navigate every map and find the best ' + tl + ' positions in ' + gn + '. ';
+      }
+      
+      body = '<h2>' + title + '</h2>'
+        + '<p>' + desc + '</p>'
+        + '<p>Whether you are a beginner or a veteran, this guide will help you improve your gameplay and achieve better results.</p>'
+        + '<h3>Key Points</h3><ul>'
+        + '<li>' + tips[0] + '</li>'
+        + '<li>' + tips[1] + '</li>'
+        + '<li>' + tips[2] + '</li>'
+        + '</ul>'
+        + '<p><strong>Pro tip:</strong> ' + proTip + '</p>';
+    }
   }
   document.getElementById('modalContent').innerHTML = ''
     + '<div class="modal-header">'
