@@ -466,6 +466,41 @@ function mapGuide(g) {
 
 /* ===== GUIDE MODAL ===== */
 var _gameFilter = '';
+
+function openGuideModal(id) {
+  var g = guides.find(function(x) { return x.id === id; });
+  if (!g) return;
+  var z = LANG === 'zh';
+  var body = z ? (g.bodyZh || g.body) : (g.body || g.bodyZh);
+  var title = z ? g.titleZh : g.title;
+  var gameName = z ? g.gameZh : g.game;
+  document.getElementById('modalContent').innerHTML = ''
+    + '<div class="modal-header">'
+    + '<img class="modal-header-img" src="' + g.thumb + '" alt="' + title + '" onerror="this.style.display=&apos;none&apos;" style="background:var(--bg2);min-height:48px;">'
+    + '<div class="modal-header-info">'
+    + '<h3>' + title + '</h3>'
+    + '<span>▶ ' + gameName + ' &middot; ' + (g.read || 5) + ' min read</span>'
+    + '</div></div>'
+    + '<div class="modal-body">' + body + '</div>';
+  document.getElementById('guideModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuideModal() {
+  document.getElementById('guideModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function filterByGame(gameId) {
+  var g = games.find(function(x) { return x.id === gameId; });
+  if (!g) return;
+  _gameFilter = gameId;
+  showAllGuides = true;
+  document.getElementById('searchInput').value = '';
+  renderGuides();
+  document.getElementById('guides').scrollIntoView({ behavior: 'smooth' });
+}
+
 async function initSupabase() {
   if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
     document.getElementById('liveDot').style.background = '#f59e0b';
